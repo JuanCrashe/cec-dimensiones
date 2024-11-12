@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Account - Sistema Universitario{% endblock %}
+
+{% block extra_css %}
+<style>
+    .account-header {
+        background: url("{{ url_for('static', filename='images/account-bg.jpg') }}") no-repeat center center;
+        background-size: cover;
+        color: white;
+        padding: 50px 0;
+        text-align: center;
+    }
+    .account-header img {
+        border-radius: 50%;
+        border: 5px solid white;
+        width: 150px;
+        height: 150px;
+    }
+    .account-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
+    .account-header p {
+        font-size: 1.25rem;
+    }
+    .account-details {
+        padding: 20px 0;
+    }
+    .account-details h2 {
+        font-size: 1.75rem;
+        font-weight: 700;
+    }
+    .account-details p {
+        font-size: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container account-details">
+    <div class="form-container">
+        <h3 class="section-title">Actualizar Cuenta</h3>
+        <form method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            <div class="form-group text-center">
+                <img src="{{ imagen_perfil }}" class="img-thumbnail mb-3">
+                {{ form.foto.label(class="form-label") }}
+                {{ form.foto(class="form-control-file", id="foto", style="display: none;") }}
+            <div class="drop-zone" id="drop-zone">
+                Arrastra y suelta la foto aquí o haz clic para seleccionar
+            </div>
+        </div>
+        <div class="profile-picture">
+            <img id="foto-preview" src="{{ url_for('static', filename='images/default.png') }}" alt="Foto de Perfil">
+        </div>
+            <div class="form-group">
+                {{ form.nombre.label(class="form-label") }}
+                {{ form.nombre(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.apellidos.label(class="form-label") }}
+                {{ form.apellidos(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(class="form-control") }}
+            </div>
+            <button type="submit" class="btn btn-primary">Actualizar</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const dropZone = document.getElementById('drop-zone');
+    const fotoInput = document.getElementById('foto');
+    const fotoPreview = document.getElementById('foto-preview');
+
+    dropZone.addEventListener('click', () => {
+        fotoInput.click();
+    });
+
+    dropZone.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', (event) => {
+        event.preventDefault();
+        dropZone.classList.remove('dragover');
+        const files = event.dataTransfer.files;
+        if (files.length > 0) {
+            fotoInput.files = files;
+            updatePreview(files[0]);
+        }
+    });
+
+    fotoInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            updatePreview(file);
+        }
+    });
+
+    function updatePreview(file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+            fotoPreview.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+    }
+</script>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="alert-container">
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+{% endblock %}

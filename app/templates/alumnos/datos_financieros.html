@@ -1,0 +1,147 @@
+<!-- datos_financieros.html -->
+{% extends "base.html" %}
+
+{% block title %}Datos Financieros - CEC Dimensiones{% endblock %}
+
+{% block extra_css %}
+<style>
+    .financial-form {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        border-radius: 8px;
+    }
+    .form-row {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    .form-group {
+        flex: 1;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="financial-form">
+        <h2 class="mb-4">Datos Financieros del Alumno {{ alumno.nombre }} {{ alumno.apellidos }}</h2>
+        <form method="POST" action="{{ url_for('alumnos.guardar_datos_financieros', alumno_id=alumno.id) }}">
+            {{ form.hidden_tag() }}
+            
+            <div class="form-row">
+                <div class="form-group">
+                    {{ form.valor_curso.label(class="form-label") }}
+                    {{ form.valor_curso(class="form-control") }}
+                    {% if form.valor_curso.errors %}
+                        {% for error in form.valor_curso.errors %}
+                            <span class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    {{ form.descuento.label(class="form-label") }}
+                    {{ form.descuento(class="form-control") }}
+                    {% if form.descuento.errors %}
+                        {% for error in form.descuento.errors %}
+                            <span class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    {{ form.valor_total_curso.label(class="form-label") }}
+                    {{ form.valor_total_curso(class="form-control", readonly=true) }}
+                </div>
+                
+                <div class="form-group">
+                    {{ form.inscripcion.label(class="form-label") }}
+                    {{ form.inscripcion(class="form-control") }}
+                    {% if form.inscripcion.errors %}
+                        {% for error in form.inscripcion.errors %}
+                            <span class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    {{ form.a_financiar.label(class="form-label") }}
+                    {{ form.a_financiar(class="form-control", readonly=true) }}
+                </div>
+                
+                <div class="form-group">
+                    {{ form.derecho_grado.label(class="form-label") }}
+                    {{ form.derecho_grado(class="form-control") }}
+                    {% if form.derecho_grado.errors %}
+                        {% for error in form.derecho_grado.errors %}
+                            <span class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    {{ form.n_cuotas.label(class="form-label") }}
+                    {{ form.n_cuotas(class="form-control") }}
+                    {% if form.n_cuotas.errors %}
+                        {% for error in form.n_cuotas.errors %}
+                            <span class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    {{ form.valor_cuotas.label(class="form-label") }}
+                    {{ form.valor_cuotas(class="form-control", readonly=true) }}
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">Guardar Datos Financieros</button>
+                <a href="{{ url_for('alumnos.lista_alumnos') }}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const valorCursoInput = form.querySelector('#valor_curso');
+    const descuentoInput = form.querySelector('#descuento');
+    const valorTotalInput = form.querySelector('#valor_total_curso');
+    const inscripcionInput = form.querySelector('#inscripcion');
+    const aFinanciarInput = form.querySelector('#a_financiar');
+    const nCuotasInput = form.querySelector('#n_cuotas');
+    const valorCuotasInput = form.querySelector('#valor_cuotas');
+
+    function calculateTotals() {
+        const valorCurso = parseFloat(valorCursoInput.value) || 0;
+        const descuento = parseFloat(descuentoInput.value) || 0;
+        const inscripcion = parseFloat(inscripcionInput.value) || 0;
+
+        const valorTotal = valorCurso - descuento;
+        valorTotalInput.value = valorTotal.toFixed(2);
+
+        const aFinanciar = valorTotal - inscripcion;
+        aFinanciarInput.value = aFinanciar.toFixed(2);
+
+        const nCuotas = parseInt(nCuotasInput.value) || 1;
+        valorCuotasInput.value = (aFinanciar / nCuotas).toFixed(2);
+    }
+
+    [valorCursoInput, descuentoInput, inscripcionInput, nCuotasInput].forEach(input => {
+        input.addEventListener('input', calculateTotals);
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

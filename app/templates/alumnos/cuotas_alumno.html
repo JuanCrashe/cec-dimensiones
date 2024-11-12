@@ -1,0 +1,104 @@
+<!-- cuotas_alumno.html -->
+{% extends "base.html" %}
+
+{% block title %}Cuotas del Alumno - {{ alumno.nombre }} {{ alumno.apellidos }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .student-info {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+    .financial-summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    .summary-item {
+        padding: 1rem;
+        border-radius: 6px;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .status-badge {
+        padding: 0.5em 1em;
+        border-radius: 20px;
+        font-weight: 500;
+        font-size: 0.875rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="student-info">
+        <h2>{{ alumno.nombre }} {{ alumno.apellidos }}</h2>
+        <div class="financial-summary">
+            <div class="summary-item">
+                <h6>Valor Total del Curso</h6>
+                <p class="h4">${{ "%.2f"|format(alumno.datos_financieros.valor_total_curso) }}</p>
+            </div>
+            <div class="summary-item">
+                <h6>Monto Financiado</h6>
+                <p class="h4">${{ "%.2f"|format(alumno.datos_financieros.a_financiar) }}</p>
+            </div>
+            <div class="summary-item">
+                <h6>Total Cuotas</h6>
+                <p class="h4">{{ alumno.datos_financieros.n_cuotas }}</p>
+            </div>
+            <div class="summary-item">
+                <h6>Valor por Cuota</h6>
+                <p class="h4">${{ "%.2f"|format(alumno.datos_financieros.valor_cuotas) }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Detalle de Cuotas</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>N° Cuota</th>
+                            <th>Monto</th>
+                            <th>Vencimiento</th>
+                            <th>Estado</th>
+                            <th>Fecha Pago</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cuota in alumno.datos_financieros.cuotas %}
+                        <tr class="{% if cuota.estado.value == 'Retrasado' %}table-danger{% elif cuota.estado.value == 'Pagado' %}table-success{% endif %}">
+                            <td>{{ cuota.numero_cuota }}</td>
+                            <td>${{ "%.2f"|format(cuota.monto) }}</td>
+                            <td>{{ cuota.fecha_vencimiento.strftime('%d/%m/%Y') }}</td>
+                            <td>
+                                <span class="status-badge {% if cuota.estado.value == 'Pagado' %}bg-success{% elif cuota.estado.value == 'Retrasado' %}bg-danger{% else %}bg-warning{% endif %} text-white">
+                                    {{ cuota.estado.value }}
+                                </span>
+                            </td>
+                            <td>{{ cuota.fecha_pago.strftime('%d/%m/%Y') if cuota.fecha_pago else '-' }}</td>
+                            <td>
+                                {% if cuota.estado.value != 'Pagado' %}
+                                <a href="{{ url_for('alumnos.registrar_pago', cuota_id=cuota.id) }}" 
+                                   class="btn btn-sm btn-primary">
+                                    <i class="fas fa-dollar-sign"></i> Registrar Pago
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

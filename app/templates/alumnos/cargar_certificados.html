@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Cargar Certificados - CEC Dimensiones{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h3 class="section-title">Carga de Certificados del Alumno {{ alumno.nombre }} {{ alumno.apellidos }}</h3>
+    <form method="POST" action="{{ url_for('alumnos.cargar_certificados', alumno_id=alumno.id) }}" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.certificados.label(class="form-label") }}
+            {{ form.certificados(class="form-control-file", multiple=True) }}
+        </div>
+        <button type="submit" class="btn btn-primary">Subir Certificados</button>
+    </form>
+</div>
+{% endblock %}

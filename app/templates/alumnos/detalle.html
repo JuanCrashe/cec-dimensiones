@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h3 class="mb-0">Ficha del Estudiante</h3>
+    </div>
+    <div class="card-body">
+        <h3 class="card-title bg-secondary text-white p-2">DATOS PERSONALES</h3>
+        <div class="row">
+            <div class="col-md-9">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>NOMBRE Y APELLIDOS:</strong> {{ alumno.nombre }} {{ alumno.apellidos }}
+                    </div>
+                    <div class="col-md-3">
+                        <strong>FECHA DE NACIMIENTO:</strong> {{ alumno.fecha_nacimiento.strftime('%d/%m/%Y') }}
+                    </div>
+                    <div class="col-md-3">
+                        <strong>EDAD:</strong> {{ alumno.edad }}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <strong>CI:</strong> {{ alumno.ci }}
+                    </div>
+                    <div class="col-md-3">
+                        <strong>TELÉFONO FIJO:</strong> {{ alumno.telefono_fijo }}
+                    </div>
+                    <div class="col-md-3">
+                        <strong>NACIONALIDAD:</strong> {{ alumno.nacionalidad }}
+                    </div>
+                    <div class="col-md-3">
+                        <strong>TELÉFONO MÓVIL:</strong> {{ alumno.telefono_movil }}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>CORREO ELECTRÓNICO:</strong> {{ alumno.correo_electronico }}
+                    </div>
+                    <div class="col-md-3">
+                        <strong>ESTADO CIVIL:</strong> {{ alumno.estado_civil }}
+                    </div>
+                    <div class="col-md-3">
+                        <strong>SEDE:</strong> {{ alumno.sede }}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <strong>N° HIJOS:</strong> {{ alumno.n_hijos }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <img src="{{ url_for('static', filename='uploads/' + alumno.foto) if alumno.foto else url_for('static', filename='images/default.png') }}" alt="Foto del estudiante" class="img-fluid img-thumbnail mb-3">
+            </div>
+        </div>
+
+        <h3 class="card-title bg-secondary text-white p-2 mt-4">DOMICILIO</h3>
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <strong>DIRECCIÓN:</strong> {{ alumno.direccion }}
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <strong>SECTOR:</strong> {{ alumno.sector }}
+            </div>
+            <div class="col-md-6">
+                <strong>REFERENCIA:</strong> {{ alumno.referencia }}
+            </div>
+        </div>
+
+        <h3 class="card-title bg-secondary text-white p-2 mt-4">REFERENCIA FAMILIAR</h3>
+        {% for referencia in alumno.referencias_familiares %}
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <strong>NOMBRES Y APELLIDOS:</strong> {{ referencia.nombres_apellidos }}
+            </div>
+            <div class="col-md-3">
+                <strong>PARENTESCO:</strong> {{ referencia.parentesco }}
+            </div>
+            <div class="col-md-3">
+                <strong>NÚMERO DE CONTACTO:</strong> {{ referencia.numero_contacto }}
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="section">
+            <h2>Certificados</h2>
+            {% for certificado in alumno.certificados %}
+            <p><a href="{{ url_for('static', filename='certificados/' ~ certificado.archivo) }}" target="_blank">{{ certificado.nombre }}</a></p>
+            {% endfor %}
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <a href="{{ url_for('alumnos.generar_pdf_alumno', alumno_id=alumno.id) }}" class="btn btn-primary">Descargar PDF</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

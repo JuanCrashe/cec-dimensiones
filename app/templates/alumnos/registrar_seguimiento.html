@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Registrar Seguimiento Académico - Sistema Universitario{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+<style>
+    body {
+        font-family: 'Roboto', sans-serif;
+    }
+    .form-container {
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .form-container h2 {
+        margin-bottom: 20px;
+        font-weight: 700;
+    }
+    .form-container .form-group {
+        margin-bottom: 15px;
+    }
+    .form-container .form-control {
+        border-radius: 5px;
+    }
+    .form-container .btn-primary {
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Registrar Seguimiento Académico</h2>
+    <form method="POST" action="{{ url_for('alumnos.registrar_seguimiento') }}">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.alumno_id.label(class="form-label") }}
+            {{ form.alumno_id(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.fecha.label(class="form-label") }}
+            {{ form.fecha(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.descripcion.label(class="form-label") }}
+            {{ form.descripcion(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.estado.label(class="form-label") }}
+            {{ form.estado(class="form-control") }}
+        </div>
+        <button type="submit" class="btn btn-primary">Registrar Seguimiento</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Alumno - Sistema Universitario{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h3 class="section-title">Editar Alumno</h3>
+    <form method="POST" action="{{ url_for('alumnos.editar_alumno', alumno_id=alumno.id) }}" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <div class="row">
+            <!-- Photo Upload Section -->
+            <div class="col-md-2">
+                <div class="profile-picture">
+                    <img id="foto-preview" src="{{ url_for('static', filename='uploads/' ~ alumno.foto) }}"  class="img-thumbnail mb-3"
+                        alt="Foto de Perfil">
+                </div>
+                <div class="form-group">
+                    {{ form.foto(class="form-control", id="foto", style="display: none;") }}
+                    <div class="drop-zone" id="drop-zone">
+                        Arrastra y suelta la foto aquí o haz clic para seleccionar
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="form-group">
+                    {{ form.ci.label(class="form-label") }}
+                    <div class="info-place-group">
+                        {{ form.ci(class="form-control") }}
+                        {{ form.correo_electronico(class="form-control") }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ form.nombre.label(class="form-label") }}
+                    <div class="info-place-group">
+                        {{ form.nombre(class="form-control") }}
+                        {{ form.apellidos(class="form-control") }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ form.fecha_nacimiento.label(class="form-label") }}
+                    <div class="date-place-group">
+                        {{ form.fecha_nacimiento(class="form-control") }}
+                        {{ form.edad(class="form-control") }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="form-group">
+                    {{ form.telefono_fijo.label(class="form-label") }}
+                    <div class="info-place-group">
+                        {{ form.telefono_fijo(class="form-control") }}
+                        {{ form.telefono_movil(class="form-control") }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ form.estado_civil.label(class="form-label") }}
+                    <div class="info-place-group">
+                        {{ form.estado_civil(class="form-control") }}
+                        {{ form.nacionalidad(class="form-control") }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ form.sede.label(class="form-label") }}
+                    <div class="info-place-group">
+                        {{ form.sede(class="form-control") }}
+                        {{ form.n_hijos(class="form-control") }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h3 class="section-title">Domicilio</h3>
+                <div class="form-group">
+                    {{ form.direccion.label(class="form-label") }}
+                    <div class="info-place-group">
+                        {{ form.direccion(class="form-control") }}
+                        {{ form.sector(class="form-control") }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ form.referencia.label(class="form-label") }}
+                    {{ form.referencia(class="form-control") }}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h3 class="section-title">Actividad Laboral</h3>
+                <div class="form-group">
+                    {{ form.profesion.label(class="form-label") }}
+                    {{ form.profesion(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.trabajo_actual.label(class="form-label") }}
+                    {{ form.trabajo_actual(class="form-control") }}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h3 class="section-title">Datos Académicos</h3>
+                <div class="form-group">
+                    {{ form.fecha_ingreso.label(class="form-label") }}
+                    <div class="info-place-group">
+                        {{ form.fecha_ingreso(class="form-control") }}
+                        {{ form.horario(class="form-control") }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ form.fecha_graduacion.label(class="form-label") }}
+                    <div class="info-place-group">
+                        {{ form.fecha_graduacion(class="form-control") }}
+                        {{ form.promocion(class="form-control") }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ form.asesor.label(class="form-label") }}
+                    {{ form.asesor(class="form-control") }}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h3 class="section-title">Referencia Familiar</h3>
+                <div class="form-group">
+                    {{ form.nombres_apellidos_referencia.label(class="form-label") }}
+                    {{ form.nombres_apellidos_referencia(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.parentesco_referencia.label(class="form-label") }}
+                    {{ form.parentesco_referencia(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.numero_contacto_referencia.label(class="form-label") }}
+                    {{ form.numero_contacto_referencia(class="form-control") }}
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Actualizar</button>
+    </form>
+</div>
+
+<script>
+    const dropZone = document.getElementById('drop-zone');
+    const fotoInput = document.getElementById('foto');
+    const fotoPreview = document.getElementById('foto-preview');
+
+    dropZone.addEventListener('click', () => {
+        fotoInput.click();
+    });
+
+    dropZone.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', (event) => {
+        event.preventDefault();
+        dropZone.classList.remove('dragover');
+        const files = event.dataTransfer.files;
+        if (files.length > 0) {
+            fotoInput.files = files;
+            updatePreview(files[0]);
+        }
+    });
+
+    fotoInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            updatePreview(file);
+        }
+    });
+
+    function updatePreview(file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+            fotoPreview.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}Lista de Alumnos - CEC Dimensiones{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="form-container table-container">
+    <h3 class="section-title">Lista de Alumnos</h3>
+    <form method="GET" action="{{ url_for('alumnos.lista_alumnos') }}" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="search" class="form-control" placeholder="Buscar alumnos..."
+                value="{{ request.args.get('search', '') }}">
+            <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i> Buscar</button>
+        </div>
+    </form>
+    <a href="{{ url_for('alumnos.export_alumnos', search=request.args.get('search', ''), sort_by=sort_by, sort_order=sort_order) }}"
+        class="btn btn-success mb-4"><i class="fas fa-file-csv"></i> Exportar CSV</a>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th onclick="sortTable('nombre')">Nombre</th>
+                <th onclick="sortTable('apellidos')">Apellidos</th>
+                <th onclick="sortTable('ci')">CI</th>
+                <th onclick="sortTable('correo_electronico')">Correo Electrónico</th>
+                <th onclick="sortTable('telefono_movil')">Teléfono Móvil</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for alumno in alumnos.items %}
+            <tr>
+                <td>{{ alumno.nombre }}</td>
+                <td>{{ alumno.apellidos }}</td>
+                <td>{{ alumno.ci }}</td>
+                <td>{{ alumno.correo_electronico }}</td>
+                <td>{{ alumno.telefono_movil }}</td>
+                <td>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle action-btn" type="button"
+                            id="actionMenu{{ alumno.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-cog"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end animate slideIn"
+                            aria-labelledby="actionMenu{{ alumno.id }}">
+                            <!-- View & Edit Group -->
+                            <li>
+                                <a class="dropdown-item"
+                                    href="{{ url_for('alumnos.detalle_alumno', alumno_id=alumno.id) }}"
+                                    data-bs-toggle="tooltip" title="Ver detalles del alumno">
+                                    <i class="fas fa-eye text-info"></i>
+                                    <span>Ver Detalles</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item"
+                                    href="{{ url_for('alumnos.editar_alumno', alumno_id=alumno.id) }}"
+                                    data-bs-toggle="tooltip" title="Editar información">
+                                    <i class="fas fa-edit text-warning"></i>
+                                    <span>Editar</span>
+                                </a>
+                            </li>
+                            <!-- Financial Group -->
+                            <li>
+                                <div class="dropdown-divider"></div>
+                                <h6 class="dropdown-header">Gestión Financiera</h6>
+                                <a class="dropdown-item"
+                                    href="{{ url_for('alumnos.guardar_datos_financieros', alumno_id=alumno.id) }}"
+                                    data-bs-toggle="tooltip" title="Gestionar datos financieros">
+                                    <i class="fas fa-dollar-sign text-success"></i>
+                                    <span>Ingresar Datos Financieros</span>
+                                </a>
+                                <a class="dropdown-item" href="{{ url_for('alumnos.ver_cuotas_alumno', alumno_id=alumno.id) }}">
+                                    <i class="fas fa-money-bill-wave text-success"></i>
+                                    Ver Cuotas
+                                </a>
+                                {% if alumno.tiene_cuotas_pendientes and alumno.proxima_cuota %}
+                                <a class="dropdown-item" href="{{ url_for('alumnos.registrar_pago', cuota_id=alumno.proxima_cuota.id) }}">
+                                    <i class="fas fa-hand-holding-usd text-primary"></i>
+                                    Registrar Pago
+                                </a>
+                                {% endif %}
+                            </li>
+                            <div class="dropdown-divider"></div>
+                            <!-- Documents Group -->
+                            <li>
+                                <a class="dropdown-item"
+                                    href="{{ url_for('alumnos.cargar_certificados', alumno_id=alumno.id) }}"
+                                    data-bs-toggle="tooltip" title="Gestionar certificados">
+                                    <i class="fas fa-upload text-secondary"></i>
+                                    <span>Subir Certificados</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+
+                            <!-- Delete Action -->
+                            <li>
+                                <button class="dropdown-item text-danger" data-bs-toggle="modal"
+                                    data-bs-target="#deleteModal" data-alumno-id="{{ alumno.id }}">
+                                    <i class="fas fa-trash-alt"></i>
+                                    <span>Eliminar</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="pagination">
+        {% if alumnos.has_prev %}
+        <a
+            href="{{ url_for('alumnos.lista_alumnos', page=alumnos.prev_num, search=request.args.get('search', ''), sort_by=sort_by, sort_order=sort_order) }}">&laquo;
+            Anterior</a>
+        {% endif %}
+        {% for page_num in alumnos.iter_pages() %}
+        {% if page_num %}
+        {% if page_num == alumnos.page %}
+        <span class="active">{{ page_num }}</span>
+        {% else %}
+        <a
+            href="{{ url_for('alumnos.lista_alumnos', page=page_num, search=request.args.get('search', ''), sort_by=sort_by, sort_order=sort_order) }}">{{
+            page_num }}</a>
+        {% endif %}
+        {% else %}
+        <span>...</span>
+        {% endif %}
+        {% endfor %}
+        {% if alumnos.has_next %}
+        <a
+            href="{{ url_for('alumnos.lista_alumnos', page=alumnos.next_num, search=request.args.get('search', ''), sort_by=sort_by, sort_order=sort_order) }}">Siguiente
+            &raquo;</a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que deseas eliminar este alumno?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="deleteForm" method="POST" action="">
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var deleteModal = document.getElementById('deleteModal')
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget
+        var alumnoId = button.getAttribute('data-alumno-id')
+        var deleteForm = document.getElementById('deleteForm')
+        deleteForm.action = '/alumnos/eliminar/' + alumnoId
+    })
+</script>
+
+<script>
+    function sortTable(column) {
+        const currentUrl = new URL(window.location.href);
+        const searchParams = currentUrl.searchParams;
+        const currentSortBy = searchParams.get('sort_by');
+        const currentSortOrder = searchParams.get('sort_order');
+
+        if (currentSortBy === column) {
+            searchParams.set('sort_order', currentSortOrder === 'asc' ? 'desc' : 'asc');
+        } else {
+            searchParams.set('sort_by', column);
+            searchParams.set('sort_order', 'asc');
+        }
+
+        window.location.href = currentUrl.toString();
+    }
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl, {
+                delay: { show: 500, hide: 100 }
+            })
+        });
+
+        // Remove tooltips before showing dropdown
+        document.querySelectorAll('.dropdown').forEach(dropdown => {
+            dropdown.addEventListener('show.bs.dropdown', function () {
+                tooltipList.forEach(tooltip => tooltip.hide());
+            });
+        });
+    });
+</script>
+{% endblock %}
