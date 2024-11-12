@@ -1,3 +1,4 @@
+import os
 from flask_migrate import Migrate
 from app import create_app, db
 from app.models import Usuario, Alumno, Certificado, ReferenciaFamiliar, SeguimientoAcademico, Cuota, DatosFinancieros
@@ -12,4 +13,5 @@ def make_shell_context():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(host="0.0.0.0", port=8080)
+    port = int(os.environ.get('PORT', 8000))
+    app.run(host='0.0.0.0', port=port)
