@@ -10,6 +10,11 @@ migrate = Migrate(app, db)
 def make_shell_context():
     return {'db': db, 'Usuario': Usuario, 'Alumno': Alumno, 'Certificado': Certificado, 'ReferenciaFamiliar': ReferenciaFamiliar, 'SeguimientoAcademico': SeguimientoAcademico, 'Cuota': Cuota, 'DatosFinancieros': DatosFinancieros}
 
+# Agregar ruta de healthcheck
+@app.route('/health')
+def health_check():
+    return {'status': 'healthy'}, 200
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()

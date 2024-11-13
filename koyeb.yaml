@@ -1,0 +1,27 @@
+# koyeb.yaml
+name: cec-dimensiones
+services:
+  - name: app
+    image: python:3.11.9-slim
+    build:
+      dockerfile: Dockerfile
+    ports:
+      - port: 8000
+    env:
+      - name: PORT
+        value: "8000"
+      - name: FLASK_APP
+        value: "run.py"
+      - name: FLASK_ENV
+        value: "production"
+      - name: SECRET_KEY
+        value: "${SECRET_KEY}"
+      - name: DATABASE_URL
+        value: "${DATABASE_URL}"
+      - name: MAIL_USERNAME
+        value: "${MAIL_USERNAME}"
+      - name: MAIL_PASSWORD
+        value: "${MAIL_PASSWORD}"
+      - name: MAIL_DEFAULT_SENDER
+        value: "${MAIL_DEFAULT_SENDER}"
+    command: gunicorn run:app --bind 0.0.0.0:$PORT --workers 4
